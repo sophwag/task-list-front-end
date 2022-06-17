@@ -18,24 +18,40 @@ const TASKS = [
 const App = () => {
   const [tasks, setTasks] = useState(TASKS);
 
+  // const toggleComplete = (id) => {
+  //   const newTasks = [];
+  //   for (const task of tasks) {
+  //     if (task.id === id) {
+  //       task.isComplete = !task.isComplete;
+  //     }
+  //     newTasks.push(task);
+  //   }
+  //   setTasks(newTasks);
+  // };
+
   const toggleComplete = (id) => {
-    const newTasks = [];
-    for (const task of tasks) {
-      if (task.id === id) {
-        task.isComplete = !task.isComplete;
-      }
-      newTasks.push(task);
-    }
+    const newTasks = tasks.map((task) => {
+      return task.id === id
+        ? { id: task.id, title: task.title, isComplete: !task.isComplete }
+        : task;
+    });
     setTasks(newTasks);
   };
 
+  // const deleteTask = (id) => {
+  //   const newTasks = [];
+  //   for (const task of tasks) {
+  //     if (task.id !== id) {
+  //       newTasks.push(task);
+  //     }
+  //   }
+  //   setTasks(newTasks);
+  // };
+
   const deleteTask = (id) => {
-    const newTasks = [];
-    for (const task of tasks) {
-      if (task.id !== id) {
-        newTasks.push(task);
-      }
-    }
+    const newTasks = tasks.filter((task) => {
+      return task.id !== id;
+    });
     setTasks(newTasks);
   };
 
