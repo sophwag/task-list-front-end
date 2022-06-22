@@ -68,7 +68,9 @@ const App = () => {
         setTasks(newTasks);
         console.log('updated task completion');
       })
-      .catch('problem with patch');
+      .catch(() => {
+        console.log('problem with patch');
+      });
   };
 
   // const deleteTask = (id) => {
