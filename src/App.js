@@ -1,22 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TaskList from './components/TaskList.js';
 import './App.css';
+import axios from 'axios';
 
-const TASKS = [
-  {
-    id: 1,
-    title: 'Mow the lawn',
-    isComplete: false,
-  },
-  {
-    id: 2,
-    title: 'Cook Pasta',
-    isComplete: true,
-  },
-];
+// const TASKS = [
+//   {
+//     id: 1,
+//     title: 'Mow the lawn',
+//     isComplete: false,
+//   },
+//   {
+//     id: 2,
+//     title: 'Cook Pasta',
+//     isComplete: true,
+//   },
+// ];
+
+const APIURL = 'https://task-list-api-c17.herokuapp.com/tasks';
 
 const App = () => {
-  const [tasks, setTasks] = useState(TASKS);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`${APIURL}`)
+      .then((res) => {
+        const newTasks = res.data.map((task) => {
+          return {
+            id: task.id,
+            title: task.title,
+            isComplete: task.is_complete,
+            description: task.description,
+          };
+        });
+        setTasks(newTasks);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log('its broken');
+        console.log(err.response.data);
+      });
+  }, []);
 
   // const toggleComplete = (id) => {
   //   const newTasks = [];
@@ -29,13 +53,22 @@ const App = () => {
   //   setTasks(newTasks);
   // };
 
-  const toggleComplete = (id) => {
-    const newTasks = tasks.map((task) => {
-      return task.id === id
-        ? { id: task.id, title: task.title, isComplete: !task.isComplete }
-        : task;
-    });
-    setTasks(newTasks);
+  const toggleComplete = (id, markTo) => {
+    const markURL = markTo
+      ? `${APIURL}/${id}/mark_complete`
+      : `${APIURL}/${id}/mark_incomplete`;
+    axios
+      .patch(markURL)
+      .then(() => {
+        const newTasks = tasks.map((task) => {
+          return task.id === id
+            ? { id: task.id, title: task.title, isComplete: !task.isComplete }
+            : task;
+        });
+        setTasks(newTasks);
+        console.log('updated task completion');
+      })
+      .catch('problem with patch');
   };
 
   // const deleteTask = (id) => {
@@ -49,10 +82,18 @@ const App = () => {
   // };
 
   const deleteTask = (id) => {
-    const newTasks = tasks.filter((task) => {
-      return task.id !== id;
-    });
-    setTasks(newTasks);
+    axios
+      .delete(`${APIURL}/${id}`)
+      .then(() => {
+        const newTasks = tasks.filter((task) => {
+          return task.id !== id;
+        });
+        setTasks(newTasks);
+        console.log(`deleted that sucker ${id}`);
+      })
+      .catch(() => {
+        console.log('It shouldnt be that hard to delete stuff???');
+      });
   };
 
   return (

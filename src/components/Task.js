@@ -7,7 +7,8 @@ const Task = ({ id, title, isComplete, completeCallback, deleteCallback }) => {
   // const [complete, setComplete] = useState(isComplete);
   const buttonClass = isComplete ? 'tasks__item__toggle--completed' : '';
   const completeMe = () => {
-    completeCallback(id);
+    const markTo = !isComplete;
+    completeCallback(id, markTo);
   };
   const deleteMe = () => {
     deleteCallback(id);
