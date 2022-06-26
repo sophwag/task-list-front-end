@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TaskList from './components/TaskList.js';
 import './App.css';
 import axios from 'axios';
+import NewTaskForm from './components/NewTaskForm.js';
 
 // const TASKS = [
 //   {
@@ -21,7 +22,7 @@ const APIURL = 'https://task-list-api-c17.herokuapp.com/tasks';
 const App = () => {
   const [tasks, setTasks] = useState([]);
 
-  useEffect(() => {
+  const getTasks = () => {
     axios
       .get(`${APIURL}`)
       .then((res) => {
@@ -40,7 +41,9 @@ const App = () => {
         console.log('its broken');
         console.log(err.response.data);
       });
-  }, []);
+  };
+
+  useEffect(getTasks, []);
 
   // const toggleComplete = (id) => {
   //   const newTasks = [];
@@ -98,6 +101,16 @@ const App = () => {
       });
   };
 
+  const addTask = (taskData) => {
+    axios
+      .post(`${APIURL}`, taskData)
+      .then(() => {
+        console.log('task posted');
+        getTasks();
+      })
+      .catch(() => console.log('post error'));
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -113,6 +126,7 @@ const App = () => {
             />
           }
         </div>
+        <NewTaskForm submitCallback={addTask} />
       </main>
     </div>
   );
